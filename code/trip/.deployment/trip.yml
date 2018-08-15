@@ -1,0 +1,117 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: trip
+    name: trip
+  name: trip
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: trip
+  # rolling update by replacing one instance after the other with max. of 3 replicas at a time
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  # mark the deployment as failed, if not finished in 60 seconds
+  progressDeadlineSeconds: 60
+  template:
+    metadata:
+      labels:
+        app: trip
+        name: trip
+    spec:
+      # Termination grace period calculates as:
+      # Internal shutdown timeout (10) + preStop timeout (8) + 5 seconds buffer time
+      terminationGracePeriodSeconds: 23
+      containers:
+      - name: trip
+        image: trip:1.0.0
+        imagePullPolicy: Never
+        ports:
+        # akka remoting
+        - name: remoting
+          containerPort: 25520
+          protocol: TCP
+        # akka-management bootstrap
+        - name: akka-mgmt-http
+          containerPort: 8558
+          protocol: TCP
+        # trip http server
+        - name: service
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /system/readiness
+            port: 8080
+          # It will take at least 15 seconds that the app is started. Hence, perform the first readiness check after this time.
+          initialDelaySeconds: 15
+          timeoutSeconds: 2
+          periodSeconds: 2
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /system/liveness
+            port: 8080
+          # Give the app 30 seconds time to start up before performing the first liveness check.
+          initialDelaySeconds: 30
+          timeoutSeconds: 2
+          periodSeconds: 5
+          failureThreshold: 3
+        lifecycle:
+          preStop:
+            exec:
+              # Create file for readiness probe.
+              # Waiting for readiness check to fail.
+              # The readiness check is responsible of taking container out of traffic before actually shutting down.
+              # The sleep time is based on the time it takes that the readiness check fails:
+              #   readinessProbe.failureThreshold * readinessProbe.periodSeconds + readinessProbe.periodSeconds
+              command: ["/bin/bash", "-c", "touch /tmp/shutdown && sleep 8"]
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: trip
+spec:
+  selector:
+    app: trip
+  # Exposes the service on each Node's IP at the static node port. A ClusterIP service, to which the NodePort service will route,
+  # is automatically created. You'll be able to contact the NodePort service, from outside the cluster.
+  # Use `minikube service trip --url` to retrieve the NodeIP:NodePort URL.
+  # In production, it is recommended to use an ingress or external load balancer instead to expose the application to the outside.
+  type: NodePort
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+subjects:
+# Note the `name` line below. The first default refers to the namespace. The second refers to the service account name.
+# For instance, `name: system:serviceaccount:myns:default` would refer to the default service account in namespace `myns`
+- kind: User
+  name: system:serviceaccount:default:default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io

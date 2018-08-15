@@ -1,0 +1,3 @@
+POST http://192.168.99.100:30561/trip/offer
+Content-Type: application/json
+@trip-offer.json
