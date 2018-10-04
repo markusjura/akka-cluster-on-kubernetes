@@ -1,6 +1,6 @@
 package com.markusjura.trip.api
 import akka.Done
-import akka.actor.CoordinatedShutdown.{PhaseServiceRequestsDone, PhaseServiceUnbind, Reason}
+import akka.actor.CoordinatedShutdown.{PhaseServiceUnbind, Reason}
 import akka.actor.{ActorSystem, CoordinatedShutdown}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
@@ -38,17 +38,7 @@ class HttpServer(implicit system: ActorSystem) extends Logging with Directives {
       case Success(binding) =>
         logger.info(s"Listening for HTTP connections on ${binding.localAddress}")
         shutdown.addTask(PhaseServiceUnbind, "api.unbind") { () =>
-          // No new connections are accepted
-          // Existing connections are still allowed to perform request/response cycles
-          binding.unbind()
-        }
-        shutdown.addTask(PhaseServiceRequestsDone, "api.requests-done") { () =>
-          // Wait 5 seconds until all HTTP requests have been processed
-          val p = Promise[Done]()
-          system.scheduler.scheduleOnce(5.seconds) {
-            p.success(Done)
-          }
-          p.future
+          binding.terminate(5.seconds).map(_ => Done)
         }
     }
 
