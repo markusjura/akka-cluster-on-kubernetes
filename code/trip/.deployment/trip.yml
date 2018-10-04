@@ -75,26 +75,31 @@ spec:
               command: ["/bin/bash", "-c", "touch /tmp/shutdown && sleep 8"]
 
 ---
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: trip
+  name: trip-svc
 spec:
   selector:
     app: trip
-  # Exposes the service on each Node's IP at the static node port. A ClusterIP service, to which the NodePort service will route,
-  # is automatically created. You'll be able to contact the NodePort service, from outside the cluster.
-  # Use `minikube service trip --url` to retrieve the NodeIP:NodePort URL.
-  # In production, it is recommended to use an ingress or external load balancer instead to expose the application to the outside.
-  type: NodePort
   ports:
   - name: http
-    port: 8080
+    port: 80
     targetPort: 8080
 
 ---
-kind: Role
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: trip-ing
+spec:
+  backend:
+    serviceName: trip-svc
+    servicePort: 80
+
+---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
 metadata:
   name: pod-reader
 rules:
