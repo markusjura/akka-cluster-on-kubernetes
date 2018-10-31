@@ -1,6 +1,6 @@
 # Talk: Managing an Akka Cluster on Kubernetes
 
-This repo contains the slides and the sample code of the talk [Managing an Akka Cluster on Kubernetes](https://www.meetup.com/Reactive-Systems-Hamburg/events/253002298/).
+This repo contains the slides and the sample code of the talk [Managing an Akka Cluster on Kubernetes](https://www.slideshare.net/markusjura/managing-an-akka-cluster-on-kubernetes-118274797).
 
 ## Content
 
