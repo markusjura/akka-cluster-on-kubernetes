@@ -2,7 +2,7 @@ package com.markusjura.trip
 
 import akka.actor.ActorSystem
 import akka.cluster.Cluster
-import akka.management.AkkaManagement
+import akka.management.scaladsl.AkkaManagement
 import akka.management.cluster.bootstrap.ClusterBootstrap
 import com.markusjura.trip.api.HttpServer
 import org.apache.logging.log4j.scala.Logging
@@ -27,8 +27,7 @@ object Main extends Logging {
   private def bootstrapCluster(system: ActorSystem, cluster: Cluster): Unit =
     if (onKubernetes) {
       // Starting Akka Cluster Management endpoint
-      val akkaManagement = AkkaManagement(system)
-      akkaManagement.start()
+      AkkaManagement(system).start()
       // Initiating Akka Cluster Bootstrap procedure
       ClusterBootstrap(system).start()
     } else {

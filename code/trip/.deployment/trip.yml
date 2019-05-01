@@ -15,15 +15,15 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
   # mark the deployment as failed, if not finished in 60 seconds
   progressDeadlineSeconds: 60
   template:
     metadata:
       labels:
         app: trip
-        name: trip
+        actorSystemName: trip
     spec:
       # Termination grace period calculates as:
       # Internal shutdown timeout (10) + preStop timeout (8) + 5 seconds buffer time
@@ -31,6 +31,7 @@ spec:
       containers:
       - name: trip
         image: trip:1.0.0
+        # Remove for a real project, the image is picked up locally for the integratio test
         imagePullPolicy: Never
         ports:
         # akka remoting
@@ -38,7 +39,7 @@ spec:
           containerPort: 25520
           protocol: TCP
         # akka-management bootstrap
-        - name: akka-mgmt-http
+        - name: management
           containerPort: 8558
           protocol: TCP
         # trip http server
@@ -46,9 +47,8 @@ spec:
           containerPort: 8080
         readinessProbe:
           httpGet:
-            scheme: HTTP
             path: /system/readiness
-            port: 8080
+            port: service
           # It will take at least 15 seconds that the app is started. Hence, perform the first readiness check after this time.
           initialDelaySeconds: 15
           timeoutSeconds: 2
@@ -58,7 +58,7 @@ spec:
           httpGet:
             scheme: HTTP
             path: /system/liveness
-            port: 8080
+            port: service
           # Give the app 30 seconds time to start up before performing the first liveness check.
           initialDelaySeconds: 30
           timeoutSeconds: 2
@@ -73,6 +73,15 @@ spec:
               # The sleep time is based on the time it takes that the readiness check fails:
               #   readinessProbe.failureThreshold * readinessProbe.periodSeconds + readinessProbe.periodSeconds
               command: ["/bin/bash", "-c", "touch /tmp/shutdown && sleep 8"]
+        env:
+          # The Kubernetes API discovery will use this service name to look for
+          # nodes with this value in the 'app' label.
+          # This can be customized with the 'pod-label-selector' setting.
+          - name: AKKA_CLUSTER_BOOTSTRAP_SERVICE_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: "metadata.labels['app']"
 
 ---
 apiVersion: v1
