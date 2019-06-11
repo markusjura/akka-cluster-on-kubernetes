@@ -22,7 +22,8 @@ lazy val `trip` =
         library.disruptor,
         library.log4jApi,
         library.log4jApiScala,
-        library.log4jCore
+        library.log4jCore,
+        library.pureConfig
       ),
       version := "1.0.0"
     )
@@ -44,6 +45,7 @@ lazy val library =
     val log4jApi                   = "org.apache.logging.log4j"      %  "log4j-api"                         % "2.11.0"
     val log4jApiScala              = "org.apache.logging.log4j"      %% "log4j-api-scala"                   % "11.0"
     val log4jCore                  = "org.apache.logging.log4j"      %  "log4j-core"                        % "2.11.0"
+    val pureConfig                 = "com.github.pureconfig"         %% "pureconfig"                        % "0.10.2"
   }
 
 lazy val commonSettings =

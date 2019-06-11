@@ -7,24 +7,23 @@ import akka.http.scaladsl.server.Directives
 import akka.stream.ActorMaterializer
 import org.apache.logging.log4j.scala.Logging
 
-import scala.concurrent.{Promise}
 import scala.util.{Failure, Success}
 import scala.concurrent.duration._
 
 object HttpServer {
 
+  final case class Config(address: String, port: Int, terminationDeadline: FiniteDuration)
+
   private final case object BindFailure extends Reason
 }
 
-class HttpServer(implicit system: ActorSystem) extends Logging with Directives {
+class HttpServer(config: HttpServer.Config)(implicit system: ActorSystem) extends Logging with Directives {
 
   import HttpServer._
+  import config._
 
   private implicit val mat = ActorMaterializer()
   private implicit val ec  = system.dispatcher
-
-  private val address = "0.0.0.0"
-  private val port    = 8080
 
   private val shutdown = CoordinatedShutdown(system)
 
@@ -38,7 +37,11 @@ class HttpServer(implicit system: ActorSystem) extends Logging with Directives {
       case Success(binding) =>
         logger.info(s"Listening for HTTP connections on ${binding.localAddress}")
         shutdown.addTask(PhaseServiceUnbind, "api.unbind") { () =>
-          binding.terminate(5.seconds).map(_ => Done)
+          binding.unbind()
+        }
+
+        shutdown.addTask(PhaseServiceUnbind, "api.terminate") { () =>
+          binding.terminate(terminationDeadline).map(_ => Done)
         }
     }
 

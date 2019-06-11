@@ -6,17 +6,23 @@ import akka.management.scaladsl.AkkaManagement
 import akka.management.cluster.bootstrap.ClusterBootstrap
 import com.markusjura.trip.api.HttpServer
 import org.apache.logging.log4j.scala.Logging
+import pureconfig.generic.auto.exportReader
+import pureconfig.loadConfigOrThrow
 
 object Main extends Logging {
+
+  final case class Config(http: HttpServer.Config)
 
   def main(args: Array[String]): Unit = {
 
     implicit val system = ActorSystem("trip")
     val cluster         = Cluster(system)
 
+    val config = loadConfigOrThrow[Config]("trip")
+
     // Start application after self member joined the cluster (Up)
     cluster.registerOnMemberUp {
-      new HttpServer()
+      new HttpServer(config.http)
     }
 
     bootstrapCluster(system, cluster)
