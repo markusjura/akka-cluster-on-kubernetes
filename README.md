@@ -36,7 +36,7 @@ This repo contains the slides and the sample code of the talk [Managing an Akka 
     ```
 7. Deploy the backend service, and create Kubernetes service and ingress resource:
     ```
-    kubectl apply -f .deployment/ingress.yml
+    kubectl apply -f .deployment/outgoing.yml
     kubectl apply -f .deployment/deployment.yml
     ```
 8. Verify that backend service is running:
