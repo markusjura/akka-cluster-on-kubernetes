@@ -29,16 +29,16 @@ lazy val `trip` =
 
 lazy val library =
   new {
-    val akkaActor                  = "com.typesafe.akka"             %% "akka-actor"                        % "2.5.21"
-    val akkaBootstrapManagement    = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % "1.0.0"
-    val akkaBootstrapDiscoveryK8   = "com.lightbend.akka.discovery"  %% "akka-discovery-kubernetes-api"     % "1.0.0"
+    val akkaActor                  = "com.typesafe.akka"             %% "akka-actor"                        % "2.5.23"
+    val akkaBootstrapManagement    = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % "1.0.1"
+    val akkaBootstrapDiscoveryK8   = "com.lightbend.akka.discovery"  %% "akka-discovery-kubernetes-api"     % "1.0.1"
     val akkaCluster                = "com.typesafe.akka"             %% "akka-cluster"                      % "2.5.21"
     val akkaClusterCustomDowning   = "com.github.TanUkkii007"        %% "akka-cluster-custom-downing"       % "0.0.12"
-    val akkaClusterSharding        = "com.typesafe.akka"             %% "akka-cluster-sharding"             % "2.5.21"
+    val akkaClusterSharding        = "com.typesafe.akka"             %% "akka-cluster-sharding"             % "2.5.23"
     val akkaLog4j                  = "de.heikoseeberger"             %% "akka-log4j"                        % "1.6.1"
     val akkaHttp                   = "com.typesafe.akka"             %% "akka-http"                         % "10.1.7"
-    val akkaHttpCirce              = "de.heikoseeberger"             %% "akka-http-circe"                   % "1.25.2"
-    val akkaStream                 = "com.typesafe.akka"             %% "akka-stream"                       % "2.5.21"
+    val akkaHttpCirce              = "de.heikoseeberger"             %% "akka-http-circe"                   % "1.26.0"
+    val akkaStream                 = "com.typesafe.akka"             %% "akka-stream"                       % "2.5.23"
     val circeGeneric               = "io.circe"                      %% "circe-generic"                     % "0.11.1"
     val disruptor                  = "com.lmax"                      %  "disruptor"                         % "3.4.2"
     val log4jApi                   = "org.apache.logging.log4j"      %  "log4j-api"                         % "2.11.0"
