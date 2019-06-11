@@ -5,7 +5,7 @@ This repo contains the slides and the sample code of the talk [Managing an Akka 
 ## Content
 
 * [Slides](slides/managing-akka-cluster-on-kubernetes-2018-08-15.pdf)
-* [Sample Scala project](code/trip)
+* [Sample Scala project](code)
 
 ## Demo instructions
 
@@ -31,12 +31,13 @@ This repo contains the slides and the sample code of the talk [Managing an Akka 
     ```
 6. Publish the `trip` backend service to the local Docker registry:
     ```
-    cd code/trip
+    cd code
     sbt docker:publishLocal
     ```
 7. Deploy the backend service, and create Kubernetes service and ingress resource:
     ```
-    kubectl apply -f .deployment/trip.yml
+    kubectl apply -f .deployment/ingress.yml
+    kubectl apply -f .deployment/deployment.yml
     ```
 8. Verify that backend service is running:
     ```
