@@ -36,10 +36,6 @@ class HttpServer(config: HttpServer.Config)(implicit system: ActorSystem) extend
 
       case Success(binding) =>
         logger.info(s"Listening for HTTP connections on ${binding.localAddress}")
-        shutdown.addTask(PhaseServiceUnbind, "api.unbind") { () =>
-          binding.unbind()
-        }
-
         shutdown.addTask(PhaseServiceRequestsDone, "api.terminate") { () =>
           binding.terminate(terminationDeadline).map(_ => Done)
         }
