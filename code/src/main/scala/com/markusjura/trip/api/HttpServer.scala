@@ -1,6 +1,6 @@
 package com.markusjura.trip.api
 import akka.Done
-import akka.actor.CoordinatedShutdown.{PhaseServiceUnbind, Reason}
+import akka.actor.CoordinatedShutdown.{PhaseServiceRequestsDone, PhaseServiceUnbind, Reason}
 import akka.actor.{ActorSystem, CoordinatedShutdown}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives
@@ -40,7 +40,7 @@ class HttpServer(config: HttpServer.Config)(implicit system: ActorSystem) extend
           binding.unbind()
         }
 
-        shutdown.addTask(PhaseServiceUnbind, "api.terminate") { () =>
+        shutdown.addTask(PhaseServiceRequestsDone, "api.terminate") { () =>
           binding.terminate(terminationDeadline).map(_ => Done)
         }
     }
