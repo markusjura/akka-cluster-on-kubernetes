@@ -1,6 +1,6 @@
 package com.markusjura.trip.api
 import akka.Done
-import akka.actor.CoordinatedShutdown.{PhaseServiceRequestsDone, PhaseServiceUnbind, Reason}
+import akka.actor.CoordinatedShutdown.{PhaseServiceRequestsDone, Reason}
 import akka.actor.{ActorSystem, CoordinatedShutdown}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives

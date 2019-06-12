@@ -12,7 +12,6 @@ lazy val `trip` =
         library.akkaActor,
         library.akkaBootstrapManagement,
         library.akkaBootstrapDiscoveryK8,
-        //library.akkaClusterCustomDowning,
         library.akkaClusterSharding,
         library.akkaHttp,
         library.akkaHttpCirce,
@@ -34,7 +33,6 @@ lazy val library =
     val akkaBootstrapManagement    = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % "1.0.1"
     val akkaBootstrapDiscoveryK8   = "com.lightbend.akka.discovery"  %% "akka-discovery-kubernetes-api"     % "1.0.1"
     val akkaCluster                = "com.typesafe.akka"             %% "akka-cluster"                      % "2.5.21"
-    val akkaClusterCustomDowning   = "com.github.TanUkkii007"        %% "akka-cluster-custom-downing"       % "0.0.12"
     val akkaClusterSharding        = "com.typesafe.akka"             %% "akka-cluster-sharding"             % "2.5.23"
     val akkaLog4j                  = "de.heikoseeberger"             %% "akka-log4j"                        % "1.6.1"
     val akkaHttp                   = "com.typesafe.akka"             %% "akka-http"                         % "10.1.7"
