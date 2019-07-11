@@ -11,7 +11,7 @@ This repo contains the slides and the sample code of the talk [Managing an Akka 
 
 1. Install minikube:
     ```
-    brew cask install minikube
+    brew cask install minikube httpie
     ```
 2. Start minikube:
     ```
